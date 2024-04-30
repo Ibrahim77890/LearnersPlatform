@@ -93,7 +93,7 @@ courseSchema.methods.addCourse = async function (req) {
     await newCourse.save();
     return newCourse;
   } catch (e) {
-    throw new Error("Error saving new course in method");
+    throw new Error("Error saving new course in method: ",e);
   }
 };
 
