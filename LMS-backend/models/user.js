@@ -27,10 +27,6 @@ const userSchema = mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Course'
         }],
-        cart: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Course'
-        }],
         authToken: {
             type: String
         }

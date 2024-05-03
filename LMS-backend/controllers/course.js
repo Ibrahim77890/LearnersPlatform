@@ -1,5 +1,5 @@
 const expressAsyncHandler = require("express-async-handler");
-const Course = require("../models/course");
+const Courses = require("../models/course");
 
 //@desc Add a Course
 //@route Post /courses/new-course
@@ -7,7 +7,7 @@ const Course = require("../models/course");
 const postCourse = expressAsyncHandler(async (req, res, next) => {
   try {
     // Create a new instance of the Course model
-    const newCourse = new Course();
+    const newCourse = new Courses();
 
     // Call the addCourse method on the new instance
     await newCourse.addCourse(req);

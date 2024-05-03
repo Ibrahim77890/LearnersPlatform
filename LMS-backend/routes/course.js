@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
     const filenameReq=file.fieldname.toString();
-    cb(null, uniqueSuffix + filenameReq);
+    cb(null, uniqueSuffix + filenameReq+".pdf");
   },
 });
 const upload = multer({
