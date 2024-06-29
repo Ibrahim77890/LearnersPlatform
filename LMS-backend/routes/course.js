@@ -1,53 +1,69 @@
 const express = require("express");
-const multer = require("multer");
 const {
   postCourse,
   getCourse,
   updateCourse,
   deleteCourse,
+  getPreviewCourse,
+  putStatusToken,
+  postFiles,
 } = require("../controllers/course");
 const {
   verifyToken,
   verifyTokenAndAdmin,
 } = require("../middleware/verifyToken");
+const upload = require("../middleware/multer");
+
 const router = express.Router();
 
-//Storage of files
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./files");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    const filenameReq=file.fieldname.toString();
-    cb(null, uniqueSuffix + filenameReq+".pdf");
-  },
-});
-const upload = multer({
-  storage: storage,
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype !== "application/pdf") {
-      // Check file mimetype
-      return cb(new Error("Only PDF files are allowed")); // Reject non-PDF files
+const uploadField = (req, res, next) => {
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "contentFiles", maxCount: 10 },
+  ])(req, res, (err) => {
+    if (err) {
+      console.error("Error uploading:", err);
+      return next(err);
     }
-    cb(null, true);
-  },
-});
+    next();
+  });
+};
 
-//Enter new course in a list
-router
-  .route("/courses/new-course")
-  .post(verifyTokenAndAdmin, upload.array('pdfFiles'), postCourse);
+const uploadFieldTest = (req, res, next) => {
+  upload.fields([
+    { name: "image", maxCount: 1 },
+  ])(req, res, (err) => {
+    if (err) {
+      console.error("Error uploading:", err);
+      return next(err);
+    }
+    next();
+  });
+};
+
+router.route("/new-course")
+  .post(
+    verifyTokenAndAdmin,
+    uploadField,
+    postCourse
+  );
+
+//Get a course for preview
+router.route("/:courseId").get(getPreviewCourse);
 
 //Get a course details from a list
-router.route("/courses/:courseId/details").get(verifyToken, getCourse);
+router.route("/:courseId/details").get(getCourse);
 
 //Update a course
-router
-  .route("/courses/:courseId/update")
-  .put(verifyTokenAndAdmin, updateCourse);
+router.route("/:courseId/update").put(verifyTokenAndAdmin, updateCourse);
 
 //Delete a course
-router.route("/courses/:courseId").delete(verifyTokenAndAdmin, deleteCourse);
+router.route("/:courseId").delete(verifyTokenAndAdmin, deleteCourse);
+
+//Route to get the status if course contains enrollment key or not
+router.route("/enrollmentStatus").put(verifyToken, putStatusToken);
+
+//Testing route for checking of cloudinary is working or not
+router.route("/cloudinary").post(uploadFieldTest, postFiles);
 
 module.exports = router;

@@ -22,7 +22,7 @@ const postSignUp = expressAsyncHandler(async (req, res, next) => {
             username,
             email,
             password: hashedPassword,
-            role
+            role,
         });
 
         // Save the user to the database
@@ -37,6 +37,7 @@ const postSignUp = expressAsyncHandler(async (req, res, next) => {
 
 const postSignIn = expressAsyncHandler(async(req, res, next) => {
     const { email, password } = req.body;
+    console.log(email, password);
 
     //Check if email exists
     const currentUser = await Users.findOne({email});
@@ -50,24 +51,35 @@ const postSignIn = expressAsyncHandler(async(req, res, next) => {
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Wrong password" });
         }
+        const authToken = currentUser.generateAuthToken('60m');
 
-        // Generate authentication token
-        const authToken = currentUser.generateAuthToken('20m');
-
-        // Update user's authToken and save
         currentUser.authToken = authToken;
         await currentUser.save();
 
-        //Set cookie for jwt token
         res.cookie('jwtToken', authToken, {httpOnly: true});
 
-        // Return success response with authToken
-        return res.status(200).json({ message: "User logged in successfully!", authToken });
+        return res.status(200).json({
+            message: "User logged in successfully!",
+            authToken,
+            role: currentUser.role,
+          });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
 });
+
+const getUsers = expressAsyncHandler(async(rq, res, next)=>{
+    try {
+        const users = await Users.find({$or: [{role: 'user'},{role: 'User]'}]})
+        if(!users){
+            res.status(404).json({error: 'No user found in system'})
+        }
+        res.status(200).json({users});
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+})
 
 const getLogout = (req, res, next) => {
         res.clearCookie('jwtToken');
@@ -88,6 +100,4 @@ const postDeleteUser = expressAsyncHandler(async (req, res, next) => {
     }
 });
 
-//For updating we have to even update cart
-
-module.exports = {postSignUp, postSignIn, getLogout, postDeleteUser};
+module.exports = {postSignUp, postSignIn, getLogout, postDeleteUser, getUsers};

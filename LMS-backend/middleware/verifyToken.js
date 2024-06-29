@@ -1,24 +1,22 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers?.authorization;
-    if(!authHeader){
-        return res.status(401).json("User not authenticated")
+    if (!authHeader) {
+        return res.status(401).json("User not authenticated");
     }
     const token = authHeader.split(" ")[1];
-    console.log(token);
-    jwt.verify(token, process.env.SECRET_KEY, (err, user)=>{
-        if(err){
+    jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+        if (err) {
             return res.status(403).json("Token not valid");
         }
         req.user = user;
         next();
-    })
+    });
 };
 
-const verifyTokenAndAdmin = (req, res, next) => {
+const verifyTokenAndAdmin = async (req, res, next) => {
     const authHeader = req.headers.authorization;
-
     if (!authHeader) {
         return res.status(401).json({ error: "User not authenticated" });
     }
@@ -30,16 +28,17 @@ const verifyTokenAndAdmin = (req, res, next) => {
             return res.status(403).json({ error: "Token not valid" });
         }
 
-        if (!user || user.role !== 'Admin') {
+        // Check if user is an admin
+        if (!user || (user.role !== "Admin" && user.role !== "admin")) {
             return res.status(401).json({ error: "User not permitted" });
         }
-
+        console.log("Admin Verified");
         req.user = user;
         next();
     });
-}
+};
 
-module.exports = {verifyToken, verifyTokenAndAdmin};
+module.exports = { verifyToken, verifyTokenAndAdmin };
 
 // function checkJwtTokenCookie() {
 //     const cookies = document.cookie.split(';');

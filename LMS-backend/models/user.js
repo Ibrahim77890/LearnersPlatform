@@ -38,6 +38,7 @@ const userSchema = mongoose.Schema(
 
 userSchema.methods.generateAuthToken = function(time) {
     const payload = {
+    _id: this._id,
     username: this.username,
     email: this.email,
     password: this.password,
@@ -53,18 +54,6 @@ userSchema.methods.generateAuthToken = function(time) {
     const authToken = jwt.sign(payload, secretKey, options);
     return authToken;
 }
-
-// userSchema.methods.postCartItem = (courseId) => {
-
-// };
-
-// userSchema.methods.getCartItems = async(courseId) => {
-//  await Course.find({code: courseId}).then(
-//     item => {
-//         return item;
-//     }
-//  ).catch();
-// };
 
 
 const Users = mongoose.model('User', userSchema);

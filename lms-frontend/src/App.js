@@ -4,6 +4,11 @@ import Auth from './pages/Auth';
 import Home from './pages/Home';
 import NewCourse from './pages/NewCourse';
 import Course from './pages/Course';
+import Dashboard from './pages/Dashboard';
+import UserCourse from './pages/UserCourse';
+import Cart from './pages/Cart';
+import Admin from './pages/Admin';
+import CartSucess from './pages/CartSucess';
 
 function App() {
   return (
@@ -12,8 +17,13 @@ function App() {
         <Routes>
           <Route path='/' element={<Auth />} />
           <Route path='/home' element={<Home/>}/>
+          <Route path='/admin-panel' element={<Admin/>}/>
+          <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/cart' element={<Cart/>}/>
+          <Route path='/cart/success' element={<CartSucess/>} />
           <Route path='/home/new-course' element={<NewCourse/>} />
-          <Route path='/course/element' element={<Course/>} />
+          <Route path='/home/course/:courseId' element={<Course/>} />
+          <Route path='/your-course' element={<UserCourse/>}/>
         </Routes>
       </Router>
     </div>

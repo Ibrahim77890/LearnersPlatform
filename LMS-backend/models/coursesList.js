@@ -17,4 +17,5 @@ const coursesListSchema = mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model('CourseList', coursesListSchema);
+const CoursesList = mongoose.model('CourseList', coursesListSchema);
+module.exports = CoursesList

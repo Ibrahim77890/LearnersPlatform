@@ -21,25 +21,31 @@ const cartSchema = mongoose.Schema(
 
 cartSchema.methods.addItem = async function(courseId) {
     const cartItem = this.items.findIndex(item => item.courseId.toString() === courseId.toString());
-    if(cartItem) {
-        cartItem.quantity++;
+    if(cartItem !== -1) {
+        this.items[cartItem].quantity++;
     } else {
-        this.items.push({ courseId });
+        this.items.push({ courseId, quantity: 1 });
     }
     await this.save();
+    return this
 }
 
 cartSchema.methods.removeItem = async function(courseId) {
     const cartItemIndex = this.items.findIndex(item => item.courseId.toString() === courseId.toString());
     if(cartItemIndex !== -1) {
         const cartItem = this.items[cartItemIndex];
-        if(cartItem.quantity > 1)
+        if(cartItem.quantity > 1) {
             cartItem.quantity--;
+        } else {
+            this.items.splice(cartItemIndex, 1);
+        }
+        await this.save();
+        return this;
     } else {
-        this.items.splice(cartItemIndex, 1);
+        throw new Error('Item not found in the cart.');
     }
-    await this.save();
 }
+
 
 const Cart = mongoose.model('Cart', cartSchema);
 module.exports = Cart;

@@ -6,13 +6,13 @@ Here I wanted that User and List of courses object containing course title and c
 */
 
 const userCourseProgressSchema = mongoose.Schema({
-    user:{
+    userId:{
         type:mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     courses:[{
-        course: {
+        courseId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Course',
             required: true
@@ -30,5 +30,7 @@ const userCourseProgressSchema = mongoose.Schema({
 }],
 },{timestamps:true});
 
-const UserCourseProgress = mongoose.model('User', userCourseProgressSchema);
+const UserCourseProgress = mongoose.model('UserCourseProgress', userCourseProgressSchema);
 module.exports = UserCourseProgress;
+
+
